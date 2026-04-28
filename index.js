@@ -22,7 +22,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const { signup, login } = require("./controller/user.controller");
-const { createFile } = require("./controller/file.controller");
+const {
+  createFile,
+  fileFetch,
+  deleteFile,
+} = require("./controller/file.controller");
 const app = express();
 app.listen(process.env.PORT || 8080);
 
@@ -33,3 +37,5 @@ app.use(express.static("view"));
 app.post("/signup", signup);
 app.post("/login", login);
 app.post("/file", upload.single("file"), createFile);
+app.get("/file", fileFetch);
+app.delete("/file/:id", deleteFile);
