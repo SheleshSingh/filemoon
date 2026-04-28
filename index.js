@@ -26,6 +26,7 @@ const {
   createFile,
   fileFetch,
   deleteFile,
+  downloadFile,
 } = require("./controller/file.controller");
 const app = express();
 app.listen(process.env.PORT || 8080);
@@ -39,3 +40,4 @@ app.post("/login", login);
 app.post("/file", upload.single("file"), createFile);
 app.get("/file", fileFetch);
 app.delete("/file/:id", deleteFile);
+app.get("/file/download/:id", downloadFile);

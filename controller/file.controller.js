@@ -1,3 +1,4 @@
+const path = require("path");
 const FileModel = require("../model/file.model");
 const fs = require("fs");
 
@@ -31,21 +32,46 @@ const deleteFile = async (req, res) => {
     const { id } = req.params;
     const file = await FileModel.findByIdAndDelete(id);
     if (!file) return res.status(404).json({ message: "File not found" });
-    res.status(200).json(file);
     fs.unlink(file.path);
+    res.status(200).json(file);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-const updateFile = (req, res) => {
+const downloadFile = async (req, res) => {
   try {
+    const { id } = req.params;
+    const file = await FileModel.findById(id);
+
+    if (!file) return res.status(404).json({ message: "File not found" });
+
+    const root = process.cwd();
+    const filePath = path.join(root, file.path);
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${file.filename}"`,
+    );
+
+    res.sendFile(filePath, (err) => {
+      res.status(404).json({ message: "File not found" });
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
+// const updateFile = (req, res) => {
+//   try {
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 module.exports = {
   createFile,
   fileFetch,
   deleteFile,
+  downloadFile,
 };
