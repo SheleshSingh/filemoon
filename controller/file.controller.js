@@ -62,12 +62,6 @@ const downloadFile = async (req, res) => {
   }
 };
 
-// const updateFile = (req, res) => {
-//   try {
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
 
 module.exports = {
   createFile,
