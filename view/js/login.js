@@ -1,27 +1,20 @@
 const toast = new Notyf({
-  position: {
-    x: "center",
-    y: "top",
-  },
+  position: { x: "center", y: "top" },
 });
 
-const signup = async (e) => {
+const login = async (e) => {
   try {
     e.preventDefault();
     const form = e.target;
     const elements = form.elements;
-
     const payload = {
-      fullname: elements.fullname.value,
-      mobile: elements.mobile.value,
       email: elements.email.value,
       password: elements.password.value,
     };
-    const { data } = await axios.post("http://localhost:8080/signup", payload);
-    form.reset();
+    const { data } = await axios.post("http://localhost:8080/login", payload);
     toast.success(data.message);
     setTimeout(() => {
-      location.href = "index.html";
+      location.href = "app/dashboard.html";
     }, 2000);
   } catch (err) {
     toast.error(err.response ? err.response.data.message : err.message);
