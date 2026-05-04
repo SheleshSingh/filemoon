@@ -13,6 +13,7 @@ const login = async (e) => {
     };
     const { data } = await axios.post("http://localhost:8080/login", payload);
     toast.success(data.message);
+    localStorage.setItem("authToken", data.token);
     setTimeout(() => {
       location.href = "app/dashboard.html";
     }, 2000);
