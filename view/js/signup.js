@@ -5,6 +5,16 @@ const toast = new Notyf({
   },
 });
 
+const checkSession = async () => {
+  const session = await getSession();
+  console.log(session);
+  if (session) {
+    location.href = "../app/dashboard.html";
+  }
+};
+
+checkSession();
+
 const signup = async (e) => {
   try {
     e.preventDefault();
@@ -21,7 +31,7 @@ const signup = async (e) => {
     form.reset();
     toast.success(data.message);
     setTimeout(() => {
-      location.href = "index.html";
+      location.href = "/login";
     }, 2000);
   } catch (err) {
     toast.error(err.response ? err.response.data.message : err.message);
