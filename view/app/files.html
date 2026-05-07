@@ -15,6 +15,7 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="https://unpkg.com/axios@1.13.2/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
   </head>
   <body>
     <div class="bg-gray-300 min-h-screen">
@@ -105,94 +106,16 @@
             </button>
           </div>
           <table class="w-full bg-white">
-            <tr class="bg-slate-900 text-white text-left">
-              <th class="font-medium py-4 pl-6">Filename</th>
-              <th class="font-medium">Type</th>
-              <th class="font-medium">Size</th>
-              <th class="font-medium">Created</th>
-              <th class="font-medium">Actions</th>
-            </tr>
-            <tr class="text-gray-500 border-b border-gray-200">
-              <td class="pl-6 py-4">Introduction to html</td>
-              <td>Image</td>
-              <td>20.03mb</td>
-              <td>24-4-2026</td>
-              <td>
-                <div class="space-x-3">
-                  <button
-                    class="bg-rose-400 px-2 py-1 text-white rounded hover:bg-rose-600"
-                  >
-                    <i class="ri-delete-bin-4-line"></i>
-                  </button>
-
-                  <button
-                    class="bg-green-400 px-2 py-1 text-white rounded hover:bg-green-500"
-                  >
-                    <i class="ri-download-line"></i>
-                  </button>
-
-                  <button
-                    class="bg-amber-400 px-2 py-1 text-white rounded hover:bg-amber-600"
-                  >
-                    <i class="ri-share-line"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="text-gray-500 border-b border-gray-200">
-              <td class="pl-6 py-4">Introduction to html</td>
-              <td>Image</td>
-              <td>20.03mb</td>
-              <td>24-4-2026</td>
-              <td>
-                <div class="space-x-3">
-                  <button
-                    class="bg-rose-400 px-2 py-1 text-white rounded hover:bg-rose-600"
-                  >
-                    <i class="ri-delete-bin-4-line"></i>
-                  </button>
-
-                  <button
-                    class="bg-green-400 px-2 py-1 text-white rounded hover:bg-green-500"
-                  >
-                    <i class="ri-download-line"></i>
-                  </button>
-
-                  <button
-                    class="bg-amber-400 px-2 py-1 text-white rounded hover:bg-amber-600"
-                  >
-                    <i class="ri-share-line"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="text-gray-500 border-b border-gray-200">
-              <td class="pl-6 py-4">Introduction to html</td>
-              <td>Image</td>
-              <td>20.03mb</td>
-              <td>24-4-2026</td>
-              <td>
-                <div class="space-x-3">
-                  <button
-                    class="bg-rose-400 px-2 py-1 text-white rounded hover:bg-rose-600"
-                  >
-                    <i class="ri-delete-bin-4-line"></i>
-                  </button>
-
-                  <button
-                    class="bg-green-400 px-2 py-1 text-white rounded hover:bg-green-500"
-                  >
-                    <i class="ri-download-line"></i>
-                  </button>
-
-                  <button
-                    class="bg-amber-400 px-2 py-1 text-white rounded hover:bg-amber-600"
-                  >
-                    <i class="ri-share-line"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
+            <thead>
+              <tr class="bg-slate-900 text-white text-left">
+                <th class="font-medium py-4 pl-6">Filename</th>
+                <th class="font-medium">Type</th>
+                <th class="font-medium">Size</th>
+                <th class="font-medium">Created</th>
+                <th class="font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="files-table"></tbody>
           </table>
         </div>
       </section>
@@ -208,7 +131,7 @@
           </button>
         </div>
         <div class="h-px bg-gray-200 -mx-6"></div>
-        <form class="space-y-6">
+        <form class="space-y-6" onsubmit="uploadFile(event)">
           <div class="flex flex-col gap-2">
             <label class="text-gray-600 font-medium">Filename</label>
             <input
@@ -231,6 +154,7 @@
           </div>
           <button
             type="submit"
+            id="upload-btn"
             class="bg-rose-400 hover:bg-rose-600 text-white py-2 px-6 rounded"
           >
             Upload now
@@ -239,9 +163,9 @@
         <div class="bg-gray-200 h-4 rounded-lg overflow-hidden">
           <div
             class="h-full w-7/12 bg-green-500 text-xs text-gray-500 text-center"
-          >
-            70%
-          </div>
+            style="width: 0"
+            id="progress"
+          ></div>
         </div>
       </div>
     </div>
