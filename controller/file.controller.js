@@ -34,8 +34,10 @@ const deleteFile = async (req, res) => {
     const file = await FileModel.findByIdAndDelete(id);
     if (!file) return res.status(404).json({ message: "File not found" });
 
-    if (fs.existsSync(file.path)) {
-      fs.unlinkSync(file.path);
+    const filePath = path.join(__dirname, "..", file.path);
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
     }
     res.status(200).json(file);
   } catch (err) {

@@ -30,6 +30,13 @@ const uploadFile = async (e) => {
     const uploadButton = document.getElementById("upload-btn");
     const progress = document.getElementById("progress");
     const formdata = new FormData(form);
+
+    // validation file size
+    const file = formdata.get("file");
+    const size = getSize(file.size);
+    if (size > 200)
+      return toast.error("File size too large max size 200mb allowed");
+
     const options = {
       onUploadProgress: (e) => {
         const loaded = e.loaded;
@@ -41,19 +48,18 @@ const uploadFile = async (e) => {
     };
 
     uploadButton.disabled = true;
-    // uploadButton.style.backgroundColor = "gray";
 
     const { data } = await axios.post("api/file", formdata, options);
     toast.success(`${data.filename} has been uploaded !`);
     fetchFiles();
-    uploadButton.disabled = false;
-    // uploadButton.style.backgroundColor = "red";
     progress.style.width = 0;
     progress.innerHTML = "";
     form.reset();
     toggleDrawer();
   } catch (err) {
     toast.error(err.response ? err.response.data.message : err.message);
+  } finally {
+    uploadButton.disabled = false;
   }
 };
 
@@ -77,12 +83,13 @@ const fetchFiles = async () => {
                 <div class="space-x-3">
                   <button
                     class="bg-rose-400 px-2 py-1 text-white rounded hover:bg-rose-600"
-                    onclick="deleteFiles('${file._id}')"
+                    onclick="deleteFiles('${file._id}', this)"
                   >
                     <i class="ri-delete-bin-4-line"></i>
                   </button>
 
                   <button
+                  onclick="downloadFiles('${file._id}', '${file.filename}', this)"
                     class="bg-green-400 px-2 py-1 text-white rounded hover:bg-green-500"
                   >
                     <i class="ri-download-line"></i>
@@ -106,10 +113,42 @@ const fetchFiles = async () => {
 
 const deleteFiles = async (id) => {
   try {
+    button.innerHTML = '<i class="animate-spin ri-loader-4-line"></i>';
+    button.disabled = true;
     const { data } = await axios.delete(`api/file/${id}`);
     toast.success("File deleted !");
     fetchFiles();
   } catch (err) {
     toast.error(err.response ? err.response.data.message : err.message);
+  } finally {
+    button.innerHTML = '<i class="ri-delete-bin-4-line"></i>';
+    button.disabled = false;
+  }
+};
+
+const downloadFiles = async (id, filename, button) => {
+  try {
+    button.innerHTML = '<i class="animate-spin ri-loader-4-line"></i>';
+    button.disabled = true;
+    const options = {
+      responseType: "blob",
+    };
+    const { data } = await axios(`api/file/download/${id}`, options);
+    const ext = data.type.split("/").pop();
+    const url = URL.createObjectURL(data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${filename}.${ext}`;
+    a.click();
+    a.remove();
+  } catch (err) {
+    if (!err.response) return toast.error(err.message);
+
+    const error = await err.response.data.text();
+    const { message } = JSON.parse(error);
+    toast.error(message);
+  } finally {
+    button.innerHTML = '<i class="ri-download-line"></i>';
+    button.disabled = false;
   }
 };

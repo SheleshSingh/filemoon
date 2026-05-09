@@ -22,7 +22,12 @@ const storage = multer.diskStorage({
     next(null, name);
   },
 });
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 200 * 1000 * 1000,
+  },
+});
 
 const { signup, login } = require("./controller/user.controller");
 const {
@@ -33,6 +38,7 @@ const {
 } = require("./controller/file.controller");
 const { fetchDashboard } = require("./controller/dashboard.controller");
 const { verifyToken } = require("./controller/token.controller");
+const { shareFile } = require("./controller/share.controller");
 const app = express();
 app.listen(process.env.PORT || 8080);
 
@@ -82,3 +88,4 @@ app.delete("/api/file/:id", deleteFile);
 app.get("/api/file/download/:id", downloadFile);
 app.get("/api/dashboard", fetchDashboard);
 app.post("/api/token/verify", verifyToken);
+app.post("/api/share", shareFile);
