@@ -12,7 +12,7 @@ const shareSchema = new Schema(
       required: true,
     },
     file: {
-      type: monggose.Types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: "File",
       required: true,
     },
