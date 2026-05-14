@@ -3,6 +3,7 @@ axios.defaults.baseURL = SERVER;
 window.onload = () => {
   fetchFiles();
 };
+
 const toggleDrawer = () => {
   const drawer = document.getElementById("drawer");
   const drawerValue = drawer.style.right;
@@ -12,12 +13,14 @@ const toggleDrawer = () => {
     drawer.style.right = "0px";
   }
 };
+
 const toast = new Notyf({
   position: {
     x: "center",
     y: "top",
   },
 });
+
 const logout = () => {
   localStorage.clear();
   location.href = "/login";
@@ -67,6 +70,7 @@ const getSize = (size) => {
   const mb = size / 1000 / 1000;
   return mb.toFixed(1);
 };
+
 const fetchFiles = async () => {
   try {
     const { data } = await axios("api/file");
@@ -89,13 +93,14 @@ const fetchFiles = async () => {
                   </button>
 
                   <button
-                  onclick="downloadFiles('${file._id}', '${file.filename}', this)"
+                    onclick="downloadFiles('${file._id}', '${file.filename}', this)"
                     class="bg-green-400 px-2 py-1 text-white rounded hover:bg-green-500"
                   >
                     <i class="ri-download-line"></i>
                   </button>
 
                   <button
+                    onclick="openModelForShare('${file._id}', '${file.filename}')"
                     class="bg-amber-400 px-2 py-1 text-white rounded hover:bg-amber-600"
                   >
                     <i class="ri-share-line"></i>
@@ -150,5 +155,39 @@ const downloadFiles = async (id, filename, button) => {
   } finally {
     button.innerHTML = '<i class="ri-download-line"></i>';
     button.disabled = false;
+  }
+};
+
+const openModelForShare = (id, filename) => {
+  new Swal({
+    showConfirmButton: false,
+    html: `
+      <form class="text-left flex flex-col gap-6" onsubmit="shareFile('${id}', event)">
+        <h1 class="font-medium text-black text-2xl">Email id</h1>
+        <input required name="email" class="border border-gray-300 w-full p-3 rounded" placeholder="main@gamil.com" />
+        <button class="bg-indigo-400 hover:bg-indigo-500 text-white rounded py-3 px-8 w-fit font-medium">Send</button>
+        <div class="flex items-center gap-2">
+          <p class="text-gray-500">You are sharing - </p>
+          <p class="text-green-400 font-medium">${filename}</p>
+        </div>
+      </form>
+    `,
+  });
+};
+
+const shareFile = async (id, e) => {
+  try {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.elements.email.value.trim();
+    const payload = {
+      email: email,
+      fileId: id,
+    };
+
+    const { data } = await axios.post(`api/share`, payload);
+    console.log(data);
+  } catch (err) {
+    toast.error(err.response ? err.response.data.message : err.message);
   }
 };
