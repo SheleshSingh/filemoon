@@ -26,6 +26,15 @@ const logout = () => {
   location.href = "/login";
 };
 
+const getToken = () => {
+  const options = {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+    },
+  };
+  return options;
+};
+
 const uploadFile = async (e) => {
   try {
     e.preventDefault();
@@ -48,6 +57,7 @@ const uploadFile = async (e) => {
         progress.style.width = percentageValue + "%";
         progress.innerHTML = percentageValue + "%";
       },
+      ...getToken(),
     };
 
     uploadButton.disabled = true;
@@ -62,7 +72,7 @@ const uploadFile = async (e) => {
   } catch (err) {
     toast.error(err.response ? err.response.data.message : err.message);
   } finally {
-    uploadButton.disabled = false;
+    // uploadButton.disabled = false;
   }
 };
 
@@ -73,7 +83,7 @@ const getSize = (size) => {
 
 const fetchFiles = async () => {
   try {
-    const { data } = await axios("api/file");
+    const { data } = await axios("api/file", getToken());
     const tableBody = document.getElementById("files-table");
     tableBody.innerHTML = "";
     for (file of data) {
@@ -116,11 +126,11 @@ const fetchFiles = async () => {
   }
 };
 
-const deleteFiles = async (id) => {
+const deleteFiles = async (id, button) => {
   try {
     button.innerHTML = '<i class="animate-spin ri-loader-4-line"></i>';
     button.disabled = true;
-    const { data } = await axios.delete(`api/file/${id}`);
+    const { data } = await axios.delete(`api/file/${id}`, getToken());
     toast.success("File deleted !");
     fetchFiles();
   } catch (err) {
@@ -137,6 +147,7 @@ const downloadFiles = async (id, filename, button) => {
     button.disabled = true;
     const options = {
       responseType: "blob",
+      ...getToken(),
     };
     const { data } = await axios(`api/file/download/${id}`, options);
     const ext = data.type.split("/").pop();
@@ -165,7 +176,7 @@ const openModelForShare = (id, filename) => {
       <form class="text-left flex flex-col gap-6" onsubmit="shareFile('${id}', event)">
         <h1 class="font-medium text-black text-2xl">Email id</h1>
         <input required name="email" class="border border-gray-300 w-full p-3 rounded" placeholder="main@gamil.com" />
-        <button class="bg-indigo-400 hover:bg-indigo-500 text-white rounded py-3 px-8 w-fit font-medium">Send</button>
+        <button id="sent" class="bg-indigo-400 hover:bg-indigo-500 text-white rounded py-3 px-8 w-fit font-medium">Send</button>
         <div class="flex items-center gap-2">
           <p class="text-gray-500">You are sharing - </p>
           <p class="text-green-400 font-medium">${filename}</p>
@@ -178,16 +189,22 @@ const openModelForShare = (id, filename) => {
 const shareFile = async (id, e) => {
   try {
     e.preventDefault();
+    const sentButton = document.getElementById("sent");
+    sentButton.disabled = true;
+    sentButton.innerHTML = `<i class="ri-loader-4-line animate-spin inline-block"></i> Processing`;
     const form = e.target;
     const email = form.elements.email.value.trim();
+
     const payload = {
       email: email,
       fileId: id,
     };
 
-    const { data } = await axios.post(`api/share`, payload);
-    console.log(data);
+    await axios.post(`api/share`, payload, getToken());
+    toast.success("File sent successefully !");
   } catch (err) {
     toast.error(err.response ? err.response.data.message : err.message);
+  } finally {
+    Swal.close();
   }
 };

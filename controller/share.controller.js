@@ -396,8 +396,31 @@ const shareFile = async (req, res) => {
       subject: "Filemoon - New File Received",
       html: getEmailTemplate(link),
     };
-    await conn.sendMail(options);
+
+    const payload = {
+      user: req.user.id,
+      receiverEmail: email,
+      file: fileId,
+    };
+    // await conn.sendMail(options);
+    // await ShareModel.create(payload);
+    await Promise.all([conn.sendMail(options), ShareModel.create(payload)]);
+
     res.send(200).json({ message: "Email sent" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const fetchShared = async (req, res) => {
+  try {
+    const history = await ShareModel.find({ user: req.user.id })
+      // .populate(
+      //   "user",
+      //   "-password",
+      // );
+      .populate("file");
+    res.status(200).json(history);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -405,4 +428,5 @@ const shareFile = async (req, res) => {
 
 module.exports = {
   shareFile,
+  fetchShared,
 };

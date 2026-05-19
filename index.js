@@ -38,7 +38,9 @@ const {
 } = require("./controller/file.controller");
 const { fetchDashboard } = require("./controller/dashboard.controller");
 const { verifyToken } = require("./controller/token.controller");
-const { shareFile } = require("./controller/share.controller");
+const { shareFile, fetchShared } = require("./controller/share.controller");
+const AuthMiddleware = require("./middleware/auth.middleware");
+
 const app = express();
 app.listen(process.env.PORT || 8080);
 
@@ -82,10 +84,11 @@ app.get("/files", (req, res) => {
 // Api endpoint
 app.post("/api/signup", signup);
 app.post("/api/login", login);
-app.post("/api/file", upload.single("file"), createFile);
-app.get("/api/file", fileFetch);
-app.delete("/api/file/:id", deleteFile);
+app.post("/api/file", AuthMiddleware, upload.single("file"), createFile);
+app.get("/api/file", AuthMiddleware, fileFetch);
+app.delete("/api/file/:id", AuthMiddleware, deleteFile);
 app.get("/api/file/download/:id", downloadFile);
-app.get("/api/dashboard", fetchDashboard);
+app.get("/api/dashboard", AuthMiddleware, fetchDashboard);
 app.post("/api/token/verify", verifyToken);
-app.post("/api/share", shareFile);
+app.post("/api/share", AuthMiddleware, shareFile);
+app.get("/api/share", AuthMiddleware, fetchShared);
