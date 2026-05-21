@@ -9,7 +9,13 @@
       href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="https://unpkg.com/axios@1.13.2/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
   </head>
   <body>
     <div class="bg-gray-300 min-h-screen">
@@ -99,48 +105,7 @@
               <th class="font-medium">Datetime</th>
               <th class="font-medium">Actions</th>
             </tr>
-            <tr class="text-gray-500 border-b border-gray-200">
-              <td class="pl-6 py-4">Introduction to html</td>
-              <td>sheleshsingh755@gmail.com</td>
-              <td>24-4-2026</td>
-              <td>
-                <div class="space-x-3">
-                  <button
-                    class="bg-rose-400 px-2 py-1 text-white rounded hover:bg-rose-600"
-                  >
-                    <i class="ri-delete-bin-4-line"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="text-gray-500 border-b border-gray-200">
-              <td class="pl-6 py-4">Introduction to html</td>
-              <td>sheleshsingh755@gmail.com</td>
-              <td>24-4-2026</td>
-              <td>
-                <div class="space-x-3">
-                  <button
-                    class="bg-rose-400 px-2 py-1 text-white rounded hover:bg-rose-600"
-                  >
-                    <i class="ri-delete-bin-4-line"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="text-gray-500 border-b border-gray-200">
-              <td class="pl-6 py-4">Introduction to html</td>
-              <td>sheleshsingh755@gmail.com</td>
-              <td>24-4-2026</td>
-              <td>
-                <div class="space-x-3">
-                  <button
-                    class="bg-rose-400 px-2 py-1 text-white rounded hover:bg-rose-600"
-                  >
-                    <i class="ri-delete-bin-4-line"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
+            <tbody id="tableBody"></tbody>
           </table>
         </div>
       </section>

@@ -29,7 +29,13 @@ const createFile = async (req, res) => {
 
 const fileFetch = async (req, res) => {
   try {
-    const files = await FileModel.find({ user: req.user.id });
+    const { limit } = req.query;
+    console.log(limit);
+    const files = await FileModel.find({ user: req.user.id })
+      .sort({
+        createdAt: -1,
+      })
+      .limit(limit);
     res.status(200).json(files);
   } catch (err) {
     res.status(500).json({ message: err.message });
