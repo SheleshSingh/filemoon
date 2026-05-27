@@ -30,7 +30,6 @@ const createFile = async (req, res) => {
 const fileFetch = async (req, res) => {
   try {
     const { limit } = req.query;
-    console.log(limit);
     const files = await FileModel.find({ user: req.user.id })
       .sort({
         createdAt: -1,

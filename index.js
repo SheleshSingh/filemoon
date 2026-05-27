@@ -29,7 +29,12 @@ const upload = multer({
   },
 });
 
-const { signup, login } = require("./controller/user.controller");
+const {
+  signup,
+  login,
+  updateImage,
+  fetchImage,
+} = require("./controller/user.controller");
 const {
   createFile,
   fileFetch,
@@ -84,6 +89,13 @@ app.get("/files", (req, res) => {
 // Api endpoint
 app.post("/api/signup", signup);
 app.post("/api/login", login);
+app.post(
+  "/api/profile-picture",
+  AuthMiddleware,
+  upload.single("file"),
+  updateImage,
+);
+app.get("/api/profile-picture", AuthMiddleware, fetchImage);
 app.post("/api/file", AuthMiddleware, upload.single("file"), createFile);
 app.get("/api/file", AuthMiddleware, fileFetch);
 app.delete("/api/file/:id", AuthMiddleware, deleteFile);

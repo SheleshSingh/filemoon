@@ -8,7 +8,6 @@ const toast = new Notyf({
 
 const checkSession = async () => {
   const session = await getSession();
-  console.log(session);
   if (session) {
     location.href = "/dashboard";
   }

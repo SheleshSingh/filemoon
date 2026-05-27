@@ -1,6 +1,7 @@
 const UserModel = require("../model/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 
 const signup = async (req, res) => {
   try {
@@ -38,7 +39,40 @@ const login = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+const updateImage = async (req, res) => {
+  const { filename } = req.file;
+  const user = await UserModel.findByIdAndUpdate(
+    req.user.id,
+    { image: filename },
+    { new: true },
+  );
+
+  if (!user) return res.status(401).json({ message: "Invalid request" });
+
+  res.status(200).json({ image: user.image });
+};
+
+const fetchImage = async (req, res) => {
+  try {
+    const { image } = await UserModel.findOne({ _id: req.user.id });
+
+    if (!image) return res.status(404).json({ message: "Image is not found" });
+
+    const root = process.cwd();
+    const file = path.join(root, "files", image);
+
+    res.sendFile(file, (err) => {
+      if (err) res.status(404).json({ message: "Image is not found" });
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   signup,
   login,
+  updateImage,
+  fetchImage,
 };

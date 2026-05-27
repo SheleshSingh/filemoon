@@ -1,6 +1,7 @@
 axios.defaults.baseURL = SERVER;
 
 window.onload = () => {
+  fetchImage();
   fetchFiles();
 };
 
@@ -36,10 +37,10 @@ const getToken = () => {
 };
 
 const uploadFile = async (e) => {
+  e.preventDefault();
+  const uploadButton = document.getElementById("upload-btn");
   try {
-    e.preventDefault();
     const form = e.target;
-    const uploadButton = document.getElementById("upload-btn");
     const progress = document.getElementById("progress");
     const formdata = new FormData(form);
 
@@ -72,13 +73,19 @@ const uploadFile = async (e) => {
   } catch (err) {
     toast.error(err.response ? err.response.data.message : err.message);
   } finally {
-    // uploadButton.disabled = false;
+    uploadButton.disabled = false;
   }
 };
 
 const getSize = (size) => {
-  const mb = size / 1000 / 1000;
-  return mb.toFixed(1);
+  const kb = size / 1000;
+  const mb = kb / 1000;
+  const gb = mb / 10000;
+
+  if (gb >= 1) return gb.toFixed(2) + "Gb";
+  if (mb >= 1) return mb.toFixed(2) + "Mb";
+  if (kb >= 1) return kb.toFixed(2) + "Kb";
+  return size + "B";
 };
 
 const fetchFiles = async () => {
@@ -91,7 +98,7 @@ const fetchFiles = async () => {
        <tr class="text-gray-500 border-b border-gray-200">
               <td class="pl-6 py-4 capitalize">${file.filename}</td>
               <td class="capitalize">${file.type}</td>
-              <td>${getSize(file.size)} Mb</td>
+              <td>${getSize(file.size)}</td>
               <td>${moment(file.createdAt).format("DD MMM YYYY, hh:mm A")}</td>
               <td>
                 <div class="space-x-3">
@@ -206,5 +213,50 @@ const shareFile = async (id, e) => {
     toast.error(err.response ? err.response.data.message : err.message);
   } finally {
     Swal.close();
+  }
+};
+
+const uploadImage = () => {
+  try {
+    const input = document.createElement("input");
+    const image = document.getElementById("image");
+    input.type = "file";
+    input.accept = "image/*";
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      const pic = document.getElementById("pic");
+      const formdata = new FormData();
+      formdata.append("file", file);
+      const { data } = await axios.post(
+        "/api/profile-picture",
+        formdata,
+        getToken(),
+      );
+      const url = URL.createObjectURL(file);
+      pic.src = url;
+    };
+  } catch (err) {
+    toast.error(err.response ? err.response.data.message : err.message);
+  }
+};
+
+const fetchImage = async () => {
+  try {
+    const options = {
+      responseType: "blob",
+      ...getToken(),
+    };
+    const { data } = await axios.get("/api/profile-picture", options);
+    const url = URL.createObjectURL(data);
+    const pic = document.getElementById("pic");
+    pic.src = url;
+  } catch (err) {
+    if (!err.response) return toast.error(err.message);
+
+    const error = await err.response.data.text();
+    const { message } = JSON.parse(error);
+    toast.error(message);
   }
 };

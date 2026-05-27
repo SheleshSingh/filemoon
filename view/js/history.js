@@ -1,6 +1,7 @@
 axios.defaults.baseURL = SERVER;
 
 window.onload = () => {
+  fetchImage();
   fetchHistory();
 };
 
@@ -45,18 +46,56 @@ const fetchHistory = async () => {
           <td class="pl-6 py-4 capitalize">${item.file.filename}</td>
           <td>${item.receiverEmail}</td>
           <td>${moment(item.createdAt).format("DD MMM YYYY hh:mm A")}</td>
-          <td>
-          <div class="space-x-3">
-            <button class="bg-rose-400 px-2 py-1 text-white rounded hover:bg-rose-600">
-              <i class="ri-delete-bin-4-line"></i>
-            </button>
-           </div>
-          </td>
         </tr>
       `;
       table.innerHTML += ui;
     }
   } catch (err) {
     toast.error(err.response ? err.response.data.message : err.message);
+  }
+};
+
+const uploadImage = () => {
+  try {
+    const input = document.createElement("input");
+    const image = document.getElementById("image");
+    input.type = "file";
+    input.accept = "image/*";
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      const pic = document.getElementById("pic");
+      const formdata = new FormData();
+      formdata.append("file", file);
+      const { data } = await axios.post(
+        "/api/profile-picture",
+        formdata,
+        getToken(),
+      );
+      const url = URL.createObjectURL(file);
+      pic.src = url;
+    };
+  } catch (err) {
+    toast.error(err.response ? err.response.data.message : err.message);
+  }
+};
+
+const fetchImage = async () => {
+  try {
+    const options = {
+      responseType: "blob",
+      ...getToken(),
+    };
+    const { data } = await axios.get("/api/profile-picture", options);
+    const url = URL.createObjectURL(data);
+    const pic = document.getElementById("pic");
+    pic.src = url;
+  } catch (err) {
+    if (!err.response) return toast.error(err.message);
+
+    const error = await err.response.data.text();
+    const { message } = JSON.parse(error);
+    toast.error(message);
   }
 };
